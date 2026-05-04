@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase';
 import { X, Mic, Square, Volume2, MicOff, AlertCircle } from 'lucide-react';
 import { useMicPitch, hzToMidi, PitchSample } from '@/hooks/useMicPitch';
 import { toast } from 'sonner';
+import { fallbackLyricsBySong } from '@/data/music';
 
 interface Lyric {
   id: number;
@@ -141,32 +142,60 @@ const PlayerScreen: React.FC<Props> = ({ song, onFinish, onExit }) => {
   // ---- Load lyrics ----
   useEffect(() => {
     const load = async () => {
-      const { data } = await supabase
-        .from('lyrics')
-        .select('*')
-        .eq('song_id', song.id)
-        .order('start_time');
-      if (data && data.length > 0) {
-        setLyrics(data as Lyric[]);
-      } else {
-        const fallback = [
-          'La la la la la',
-          'Sing along with me now',
-          'Music in the air',
-          'Tonight we celebrate',
-          'Voices rise together',
-          'Magkakasama tayo',
-          'Awit ng pag-ibig',
-          'Forever in our hearts',
-          'Sing it loud and proud',
-          'MUSIKAROKI night!',
-        ].map((t, i) => ({
-          id: i,
-          line_text: t,
-          start_time: 4 + i * 5,
-          end_time: 9 + i * 5,
-        }));
-        setLyrics(fallback);
+      const local = fallbackLyricsBySong[song.id];
+      try {
+        const { data, error } = await supabase
+          .from('lyrics')
+          .select('*')
+          .eq('song_id', song.id)
+          .order('start_time');
+        if (error || !data || data.length === 0) {
+          if (local) setLyrics(local as Lyric[]);
+          else {
+            const fallback = [
+              'La la la la la',
+              'Sing along with me now',
+              'Music in the air',
+              'Tonight we celebrate',
+              'Voices rise together',
+              'Magkakasama tayo',
+              'Awit ng pag-ibig',
+              'Forever in our hearts',
+              'Sing it loud and proud',
+              'MUSIKAROKI night!',
+            ].map((t, i) => ({
+              id: i,
+              line_text: t,
+              start_time: 4 + i * 5,
+              end_time: 9 + i * 5,
+            }));
+            setLyrics(fallback);
+          }
+        } else {
+          setLyrics(data as Lyric[]);
+        }
+      } catch (error) {
+        if (local) setLyrics(local as Lyric[]);
+        else {
+          const fallback = [
+            'La la la la la',
+            'Sing along with me now',
+            'Music in the air',
+            'Tonight we celebrate',
+            'Voices rise together',
+            'Magkakasama tayo',
+            'Awit ng pag-ibig',
+            'Forever in our hearts',
+            'Sing it loud and proud',
+            'MUSIKAROKI night!',
+          ].map((t, i) => ({
+            id: i,
+            line_text: t,
+            start_time: 4 + i * 5,
+            end_time: 9 + i * 5,
+          }));
+          setLyrics(fallback);
+        }
       }
     };
     load();

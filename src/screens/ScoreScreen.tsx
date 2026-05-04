@@ -64,6 +64,8 @@ const ScoreScreen: React.FC<Props> = ({ song, scores, recordingBlob, onNext, onL
             const { data } = supabase.storage.from('karaoke-recordings').getPublicUrl(filename);
             recording_url = data.publicUrl;
             setUploadedUrl(recording_url);
+          } else {
+            console.warn('Upload failed', upErr.message || upErr);
           }
         } catch (e) {
           console.warn('Upload failed', e);
@@ -72,15 +74,19 @@ const ScoreScreen: React.FC<Props> = ({ song, scores, recordingBlob, onNext, onL
         }
       }
 
-      await supabase.from('scores').insert({
-        song_id: song.id,
-        player_name: playerName,
-        pitch_score: scores.pitch,
-        timing_score: scores.timing,
-        consistency_score: scores.consistency,
-        final_score: scores.final,
-        recording_url,
-      });
+      try {
+        await supabase.from('scores').insert({
+          song_id: song.id,
+          player_name: playerName,
+          pitch_score: scores.pitch,
+          timing_score: scores.timing,
+          consistency_score: scores.consistency,
+          final_score: scores.final,
+          recording_url,
+        });
+      } catch (e) {
+        console.warn('Score submission failed', e);
+      }
     };
 
     persist();

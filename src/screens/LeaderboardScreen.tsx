@@ -23,20 +23,30 @@ const LeaderboardScreen: React.FC = () => {
   useEffect(() => {
     const load = async () => {
       setLoading(true);
-      let q = supabase
-        .from('scores')
-        .select('*, songs(title, artist, is_opm)')
-        .order('final_score', { ascending: false })
-        .limit(20);
-      if (filter === 'This Week') {
-        const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-        q = q.gte('recorded_at', weekAgo);
+      try {
+        let q = supabase
+          .from('scores')
+          .select('*, songs(title, artist, is_opm)')
+          .order('final_score', { ascending: false })
+          .limit(20);
+        if (filter === 'This Week') {
+          const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+          q = q.gte('recorded_at', weekAgo);
+        }
+        const { data, error } = await q;
+        if (error || !data) {
+          setRows([]);
+        } else {
+          let result = (data as any[]) || [];
+          if (filter === 'OPM Only') result = result.filter((r) => r.songs?.is_opm);
+          setRows(result);
+        }
+      } catch (error) {
+        console.warn('Leaderboard load failed', error);
+        setRows([]);
+      } finally {
+        setLoading(false);
       }
-      const { data } = await q;
-      let result = (data as any[]) || [];
-      if (filter === 'OPM Only') result = result.filter((r) => r.songs?.is_opm);
-      setRows(result);
-      setLoading(false);
     };
     load();
 

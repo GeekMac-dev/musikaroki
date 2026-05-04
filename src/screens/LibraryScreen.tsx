@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabase';
 import { Song } from '@/store/karaokeStore';
 import SongCard from '@/components/SongCard';
 import { Search, Loader2 } from 'lucide-react';
+import { fallbackSongs, filterSongs } from '@/data/music';
 
 const FILTERS = ['All', 'OPM', 'Pop', 'Rock', 'Love Songs', 'Trending'];
 const PAGE_SIZE = 20;
@@ -21,15 +22,29 @@ const LibraryScreen: React.FC<Props> = ({ onPlay }) => {
   useEffect(() => {
     const load = async () => {
       setLoading(true);
-      let q = supabase.from('songs').select('*');
-      if (filter === 'OPM') q = q.eq('is_opm', true);
-      else if (filter === 'Trending') q = q.gte('popularity', 90);
-      else if (filter !== 'All') q = q.eq('genre', filter);
-      if (search) q = q.or(`title.ilike.%${search}%,artist.ilike.%${search}%`);
-      q = q.order('popularity', { ascending: false }).range(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE - 1);
-      const { data } = await q;
-      setSongs((data as Song[]) || []);
-      setLoading(false);
+      const localFallback = filterSongs(fallbackSongs, search, filter).slice(
+        page * PAGE_SIZE,
+        page * PAGE_SIZE + PAGE_SIZE - 1
+      );
+
+      try {
+        let q = supabase.from('songs').select('*');
+        if (filter === 'OPM') q = q.eq('is_opm', true);
+        else if (filter === 'Trending') q = q.gte('popularity', 90);
+        else if (filter !== 'All') q = q.eq('genre', filter);
+        if (search) q = q.or(`title.ilike.%${search}%,artist.ilike.%${search}%`);
+        q = q.order('popularity', { ascending: false }).range(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE - 1);
+        const { data, error } = await q;
+        if (error || !data || data.length === 0) {
+          setSongs(localFallback);
+        } else {
+          setSongs(data as Song[]);
+        }
+      } catch (error) {
+        setSongs(localFallback);
+      } finally {
+        setLoading(false);
+      }
     };
     const t = setTimeout(load, 250);
     return () => clearTimeout(t);
