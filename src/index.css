@@ -1,0 +1,110 @@
+@import url('https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@400;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 270 100% 4%;
+    --foreground: 0 0% 100%;
+    --card: 270 60% 8%;
+    --card-foreground: 0 0% 100%;
+    --popover: 270 60% 8%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 51 100% 50%;
+    --primary-foreground: 270 100% 4%;
+    --secondary: 326 100% 62%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 270 30% 15%;
+    --muted-foreground: 270 20% 70%;
+    --accent: 192 100% 50%;
+    --accent-foreground: 270 100% 4%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 270 30% 20%;
+    --input: 270 30% 15%;
+    --ring: 51 100% 50%;
+    --radius: 0.75rem;
+  }
+  .dark {
+    --background: 270 100% 4%;
+    --foreground: 0 0% 100%;
+    --card: 270 60% 8%;
+    --card-foreground: 0 0% 100%;
+    --popover: 270 60% 8%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 51 100% 50%;
+    --primary-foreground: 270 100% 4%;
+    --secondary: 326 100% 62%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 270 30% 15%;
+    --muted-foreground: 270 20% 70%;
+    --accent: 192 100% 50%;
+    --accent-foreground: 270 100% 4%;
+    --border: 270 30% 20%;
+    --input: 270 30% 15%;
+    --ring: 51 100% 50%;
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Nunito', sans-serif;
+    background: #0A0015;
+  }
+  h1, h2, h3, h4, .font-display {
+    font-family: 'Lilita One', cursive;
+    letter-spacing: 0.02em;
+  }
+}
+
+@keyframes rainbow-slide {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+@keyframes neon-pulse {
+  0%, 100% { box-shadow: 0 0 20px #FFD700, 0 0 40px #FFD70066, 0 0 60px #FFD70033; }
+  50% { box-shadow: 0 0 30px #FFD700, 0 0 60px #FFD70099, 0 0 80px #FFD70066; }
+}
+
+@keyframes pink-pulse {
+  0%, 100% { box-shadow: 0 0 20px #FF3CAC, 0 0 40px #FF3CAC66; }
+  50% { box-shadow: 0 0 30px #FF3CAC, 0 0 60px #FF3CAC99; }
+}
+
+@keyframes float-up {
+  0% { transform: translateY(20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes mic-bounce {
+  0%, 100% { transform: scaleY(0.4); }
+  50% { transform: scaleY(1); }
+}
+
+@keyframes confetti-fall {
+  0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+@keyframes countdown-pop {
+  0% { transform: scale(0.3); opacity: 0; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes score-reveal {
+  0% { transform: scale(0); opacity: 0; }
+  60% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.neon-gold { animation: neon-pulse 2s ease-in-out infinite; }
+.neon-pink { animation: pink-pulse 2s ease-in-out infinite; }
+.text-glow-gold { text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD70099, 0 0 30px #FFD70066; }
+.text-glow-pink { text-shadow: 0 0 10px #FF3CAC, 0 0 20px #FF3CAC99; }
+.text-glow-cyan { text-shadow: 0 0 10px #00D4FF, 0 0 20px #00D4FF99; }
